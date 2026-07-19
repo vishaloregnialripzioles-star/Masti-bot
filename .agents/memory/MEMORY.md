@@ -1,0 +1,1 @@
+- [Discord Bot Architecture](discord-bot.md) — tsx-run bot in artifacts/discord-bot; all features wired; DB schema in lib/db/src/schema/

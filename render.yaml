@@ -1,0 +1,26 @@
+services:
+  - type: worker
+    name: discord-bot
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install -g pnpm@10 && pnpm install
+    startCommand: pnpm --filter @workspace/discord-bot run start
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: discord-bot-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: discord-bot-db
+    databaseName: discordbot
+    user: discordbot
+    region: oregon
+    plan: free
