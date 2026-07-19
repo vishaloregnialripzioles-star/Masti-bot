@@ -1,5 +1,37 @@
 import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { createServer } from "http";
 import { logger } from "./lib/logger.js";
+
+// ── HTTP health-check server (required for Render Web Service) ──────────────
+const PORT = process.env.PORT ?? 3000;
+const httpServer = createServer((req, res) => {
+  if (req.url === "/health") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: "ok", bot: client?.user?.tag ?? "connecting" }));
+  } else {
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(`
+      <!DOCTYPE html>
+      <html>
+        <head><title>Masti Bot</title>
+        <style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#23272a;color:#fff}
+        .card{text-align:center;padding:40px;background:#2c2f33;border-radius:16px;box-shadow:0 4px 20px #0008}
+        h1{color:#7289da;margin-bottom:8px}span{color:#43b581;font-size:1.1em}</style>
+        </head>
+        <body><div class="card">
+          <h1>🤖 Masti Bot</h1>
+          <p><span>● Online</span></p>
+          <p style="color:#99aab5">Discord bot is running. Prefix: <code style="background:#23272a;padding:2px 8px;border-radius:4px">.</code></p>
+          <p style="color:#72767d;font-size:.85em">Keep this page pinged with UptimeRobot to stay awake 24/7</p>
+        </div></body>
+      </html>
+    `);
+  }
+});
+
+httpServer.listen(PORT, () => {
+  logger.info(`Health-check server listening on port ${PORT}`);
+});
 
 // Register all events
 import registerReady from "./events/ready.js";
